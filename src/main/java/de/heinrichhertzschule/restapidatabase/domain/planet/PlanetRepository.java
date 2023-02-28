@@ -11,6 +11,8 @@ import de.heinrichhertzschule.restapidatabase.error.exceptions.notfound.PlanetNo
 import de.heinrichhertzschule.restapidatabase.domain.planet.mapper.PlanetRowMapper;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class PlanetRepository {
+
+  private final static Logger logger = LoggerFactory.getLogger(PlanetRepository.class);
   public final static String PID = "PID";
 
   public final static String KID = "KID";
@@ -45,6 +49,7 @@ public class PlanetRepository {
     try {
       namedParameterJdbcTemplate.update(sql, parameters);
     } catch (DataAccessException exception) {
+      logger.error(exception.getMessage());
       throw new InsertFailedException(exception.getMessage());
     }
   }
@@ -60,6 +65,7 @@ public class PlanetRepository {
     try {
       namedParameterJdbcTemplate.update(sql, parameters);
     } catch (DataAccessException e) {
+      logger.error(e.getMessage());
       throw new UpdateFailedException(e.getMessage());
     }
   }
@@ -72,8 +78,10 @@ public class PlanetRepository {
     try{
       return namedParameterJdbcTemplate.queryForObject(sql, parameters, new PlanetRowMapper());
     } catch (EmptyResultDataAccessException e) {
+      logger.warn("NotFoundException - Planet with id: " + planetId);
       throw new PlanetNotFoundException("id: " + planetId);
     } catch (DataAccessException e) {
+      logger.error(e.getMessage());
       throw new InternalErrorException();
     }
   }
@@ -88,8 +96,10 @@ public class PlanetRepository {
     try{
       return namedParameterJdbcTemplate.queryForObject(sql, parameters, new PlanetRowMapper());
     } catch (EmptyResultDataAccessException e) {
+      logger.warn("NotFoundException - planet: " + planet.toString());
       throw new PlanetNotFoundException(planet.toString());
     } catch (DataAccessException e) {
+      logger.error(e.getMessage());
       throw new InternalErrorException();
     }
   }
@@ -99,25 +109,13 @@ public class PlanetRepository {
     try {
       return jdbcTemplate.query(sql, new PlanetRowMapper());
     } catch (DataAccessException e) {
+      logger.error(e.getMessage());
       return Collections.emptyList();
     }
   }
 
   public List<EnrichedPlanetDTO> getPlanetFields(long pid)
       throws PlanetNotFoundException, InternalErrorException {
-//    String sql ="SELECT PID, PlanetName, Breite, Hoehe, KID, X, Y, MID, Typ, Temperatur, RID, Bezeichnung AS Richtung, RoboterName, Energie, Betriebstemperatur, Status, Heater, Cooler FROM (SELECT PlanetMessdaten.PID, PlanetMessdaten.KID AS MessdatenKID, PlanetMessdaten.Name AS PlanetName, PlanetMessdaten.Breite, PlanetMessdaten.Hoehe, PlanetMessdaten.MID, PlanetMessdaten.TYP, PlanetMessdaten.TEMPERATUR, RoboterData.RID, RoboterData.KID as RoboterKID, RoboterData.Bezeichnung, RoboterData.Name AS RoboterName, RoboterData.Energie, RoboterData.Betriebstemperatur, RoboterData.Status, RoboterData.Heater, RoboterData.Cooler  FROM (SELECT planeten.PID, planeten.Name, planeten.Breite, planeten.Hoehe, koordinaten.KID, koordinaten.X, koordinaten.Y, messdaten.MID, boeden.Typ, messdaten.Temperatur "
-//        + "FROM planeten "
-//        + "LEFT OUTER JOIN messdaten ON planeten.PID = messdaten.PID "
-//        + "LEFT OUTER JOIN koordinaten ON messdaten.KID = koordinaten.KID "
-//        + "LEFT OUTER JOIN boeden On boeden.BID = messdaten.BID) AS PlanetMessdaten "
-//        + "LEFT OUTER JOIN (SELECT roboter.RID, roboter.PID, roboter.KID, koordinaten.X, koordinaten.Y, richtungen.Bezeichnung, roboter.Name, roboter.Energie, roboter.Betriebstemperatur, stati.Status, roboter.Heater, roboter.Cooler "
-//        + "FROM roboter "
-//        + "LEFT OUTER JOIN koordinaten ON roboter.KID = koordinaten.KID "
-//        + "lEFT OUTER JOIN richtungen ON roboter.RTID = richtungen.RTID "
-//        + "LEfT OUTER JOIN stati ON roboter.SID = stati.SID) AS RoboterData ON PlanetMessdaten.PID = RoboterData.PID AND PlanetMessdaten.KID = RoboterData.KID) AS PlanetMessdataRobots "
-//        + "LEFT OUTER JOIN koordinaten ON koordinaten.KID = PlanetMessdataRobots.MessdatenKID OR koordinaten.KID = PlanetMessdataRobots.RoboterKID "
-//        + "WHERE PID = :pid "
-//        + "ORDER BY PID, KID;";
     String sql ="SELECT PlanetCoordData.PID, planeten.Name AS PlanetName, Breite, Hoehe, PlanetCoordData.KID, koordinaten.X, koordinaten.Y, PlanetCoordData.MID, PlanetCoordData.Typ, PlanetCoordData.Temperatur,PlanetCoordData.RID, PlanetCoordData.Bezeichnung AS Richtung, PlanetCoordData.Name AS RoboterName, Energie, Betriebstemperatur, Status, Heater, Cooler FROM (SELECT :pid AS PID, Coord.KID, MID, Messdata.Typ, Messdata.Temperatur, RID, Bezeichnung, Name, Energie, Betriebstemperatur, Status, Heater, Cooler "
         + "FROM (SELECT KID FROM koordinaten WHERE X < (SELECT Breite FROM planeten WHERE PID = :pid) AND Y < (SELECT Hoehe FROM planeten WHERE PID = :pid)) AS Coord "
         + "LEFT OUTER JOIN ( "
@@ -142,6 +140,7 @@ public class PlanetRepository {
     } catch (EmptyResultDataAccessException e) {
       throw new PlanetNotFoundException("pid: " + pid);
     } catch (DataAccessException e) {
+      logger.error(e.getMessage());
       throw new InternalErrorException();
     }
   }

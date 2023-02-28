@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/planeten")
 public class PlanetController {
-
+  private final static Logger logger = LoggerFactory.getLogger(PlanetController.class);
   private final PlanetService planetService;
 
   public PlanetController(PlanetService planetService) {
@@ -158,13 +160,17 @@ public class PlanetController {
   @RequestMapping(method = RequestMethod.POST)
   public ResponseEntity<PlanetResponseDTO> savePlanet(@RequestBody @Valid PlanetRequestDTO planet)
       throws BadRequestException, InternalErrorException {
+
     if(planet.name() == null || planet.name().equals("")) {
+      logger.warn("POST-Request Exception: /api/v1/planeten body:" + planet.toString());
       throw new MissingPlanetNameException();
     }
     if(planet.width() <= 0) {
+      logger.warn("POST-Request Exception: /api/v1/planeten body:" + planet.toString());
       throw new MissingWidthException();
     }
     if(planet.height() <= 0) {
+      logger.warn("POST-Request Exception: /api/v1/planeten body:" + planet.toString());
       throw new MissingHeightException();
     }
     return new ResponseEntity<>(planetService.insert(planet), HttpStatus.OK);

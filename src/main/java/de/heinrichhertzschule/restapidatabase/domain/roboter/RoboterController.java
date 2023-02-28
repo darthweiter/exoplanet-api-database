@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/roboter")
 public class RoboterController {
+  private final static Logger logger = LoggerFactory.getLogger(RoboterController.class);
   private final RoboterService roboterService;
 
   public RoboterController(RoboterService roboterService) {
@@ -118,6 +121,7 @@ public class RoboterController {
   @RequestMapping(method = RequestMethod.POST)
   public ResponseEntity<RoboterResponseDTO> saveRobot(@RequestBody @Valid RoboterInsertRequestDTO roboter)
       throws BadRequestException, InternalErrorException {
+    logger.info("POST-Request: /api/v1/roboter body: " + roboter.toString());
     return new ResponseEntity<>(roboterService.insert(roboter), HttpStatus.OK);
   }
 
@@ -150,6 +154,7 @@ public class RoboterController {
   public ResponseEntity<RoboterResponseDTO> updateRobot(@PathVariable long id, @RequestBody @Valid RoboterRequestDTO roboter)
       throws BadRequestException, InternalErrorException {
     if(roboter.x() == null || roboter.y() == null || roboter.x() < 0 || roboter.y() < 0) {
+      logger.warn("Bad-Request " + roboter.toString());
       throw new GeneralBadRequestException("Coordinate must be >= 0");
     }
     return new ResponseEntity<>(roboterService.update(id, roboter), HttpStatus.OK);

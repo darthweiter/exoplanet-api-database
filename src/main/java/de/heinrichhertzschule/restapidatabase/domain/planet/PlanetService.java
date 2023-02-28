@@ -15,11 +15,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlanetService {
-
+private final static Logger logger = LoggerFactory.getLogger(PlanetService.class);
   private final PlanetRepository planetRepository;
 
   public PlanetService(PlanetRepository planetRepository) {
@@ -92,6 +94,7 @@ public class PlanetService {
     try {
       return getPlanet(planet);
     } catch (NotFoundException e) {
+      logger.error("NotFoundException after insert - planet: " + planet.toString());
       throw new InternalErrorException();
     }
   }

@@ -10,11 +10,14 @@ import de.heinrichhertzschule.restapidatabase.error.exceptions.notfound.NotFound
 import de.heinrichhertzschule.restapidatabase.error.exceptions.notfound.RoboterNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RoboterService {
 
+  private final static Logger logger = LoggerFactory.getLogger(RoboterService.class);
   private final RoboterRepository roboterRepository;
 
   public RoboterService(RoboterRepository roboterRepository) {
@@ -27,13 +30,13 @@ public class RoboterService {
     try {
       return getByPIDAndName(requestDTO.pid(), requestDTO.name());
     } catch (NotFoundException ex) {
+      logger.error("NotFoundException on insert roboter: " + requestDTO.toString());
       throw new InternalErrorException();
     }
   }
 
   public RoboterResponseDTO getById(long id)
       throws NotFoundException, InternalErrorException {
-
     return map(roboterRepository.getById(id));
   }
 
@@ -43,6 +46,7 @@ public class RoboterService {
     try {
       return getById(id);
     } catch (NotFoundException e) {
+      logger.error("NotFoundException after update with id: "+ id + " robot: " + input);
       throw new InternalErrorException();
     }
   }
