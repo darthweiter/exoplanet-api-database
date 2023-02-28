@@ -211,8 +211,7 @@ INSERT IGNORE INTO `exoplanetprojekt`.`boeden` (`BID`, `Typ`) VALUES
 (5, 'WASSER'),
 (6, 'PFLANZEN'),
 (7, 'MORAST'),
-(8, 'LAVA'),
-(9, 'FLUSS');
+(8, 'LAVA');
 
 -- --------------------------------------------------------
 
