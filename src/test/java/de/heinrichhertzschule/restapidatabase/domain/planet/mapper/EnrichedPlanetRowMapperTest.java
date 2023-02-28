@@ -60,7 +60,7 @@ public class EnrichedPlanetRowMapperTest {
     when(resultSet.getBoolean(RoboterRepository.COOLER)).thenReturn(cooler);
     when(resultSet.getLong(MeasureRepository.MID)).thenReturn(mid);
     ObjectMapper mapper = new ObjectMapper();
-    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, ground, temperature, rid, direction, roboterName, energy, robotTemperature, status, heater, cooler));
+    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, mid , ground, temperature, rid, direction, roboterName, energy, robotTemperature, status, heater, cooler));
 
     EnrichedPlanetDTO result = objectUnderTest.mapRow(resultSet, rowNumber);
 
@@ -104,7 +104,7 @@ public class EnrichedPlanetRowMapperTest {
     when(resultSet.getBoolean(RoboterRepository.COOLER)).thenReturn(cooler);
     when(resultSet.getLong(MeasureRepository.MID)).thenReturn(0L);
     ObjectMapper mapper = new ObjectMapper();
-    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, null, null, rid, direction, roboterName, energy, robotTemperature, status, heater, cooler));
+    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, null, null, null, rid, direction, roboterName, energy, robotTemperature, status, heater, cooler));
 
     EnrichedPlanetDTO result = objectUnderTest.mapRow(resultSet, rowNumber);
 
@@ -138,7 +138,7 @@ public class EnrichedPlanetRowMapperTest {
     when(resultSet.getLong(RoboterRepository.RID)).thenReturn(0L);
     when(resultSet.getLong(MeasureRepository.MID)).thenReturn(mid);
     ObjectMapper mapper = new ObjectMapper();
-    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, ground, temperature, null, null, null, null, null, null, null, null));
+    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, kid, x, y, name, width, height, mid, ground, temperature, null, null, null, null, null, null, null, null));
 
     EnrichedPlanetDTO result = objectUnderTest.mapRow(resultSet, rowNumber);
 
@@ -167,7 +167,7 @@ public class EnrichedPlanetRowMapperTest {
     when(resultSet.getLong(RoboterRepository.RID)).thenReturn(0L);
     when(resultSet.getLong(MeasureRepository.MID)).thenReturn(mid);
     ObjectMapper mapper = new ObjectMapper();
-    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, null, null, null, name, width, height, ground, temperature, null, null, null, null, null, null, null, null));
+    String expected = mapper.writeValueAsString(new EnrichedPlanetDTO(pid, null, null, null, name, width, height, mid, ground, temperature, null, null, null, null, null, null, null, null));
 
     EnrichedPlanetDTO result = objectUnderTest.mapRow(resultSet, rowNumber);
 

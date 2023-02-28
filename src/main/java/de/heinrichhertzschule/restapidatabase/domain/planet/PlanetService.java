@@ -44,6 +44,9 @@ public class PlanetService {
     int height = firstEnrichedPlanet.height();
     Map<Long, PlanetFieldResponseDTO> coordMessdataMap = new HashMap<>();
     for (EnrichedPlanetDTO enrichedPlanet : enrichedPlanets) {
+      if(enrichedPlanet.rid() == null && enrichedPlanet.mid() == null) {
+        continue;
+      }
       Long kid = enrichedPlanet.kid();
       if (kid != null) {
         PlanetFieldResponseDTO planetField = coordMessdataMap.get(kid);

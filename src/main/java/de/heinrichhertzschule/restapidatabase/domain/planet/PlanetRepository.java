@@ -105,19 +105,30 @@ public class PlanetRepository {
 
   public List<EnrichedPlanetDTO> getPlanetFields(long pid)
       throws PlanetNotFoundException, InternalErrorException {
-    String sql ="SELECT PID, PlanetName, Breite, Hoehe, KID, X, Y, MID, Typ, Temperatur, RID, Bezeichnung AS Richtung, RoboterName, Energie, Betriebstemperatur, Status, Heater, Cooler FROM (SELECT PlanetMessdaten.PID, PlanetMessdaten.KID AS MessdatenKID, PlanetMessdaten.Name AS PlanetName, PlanetMessdaten.Breite, PlanetMessdaten.Hoehe, PlanetMessdaten.MID, PlanetMessdaten.TYP, PlanetMessdaten.TEMPERATUR, RoboterData.RID, RoboterData.KID as RoboterKID, RoboterData.Bezeichnung, RoboterData.Name AS RoboterName, RoboterData.Energie, RoboterData.Betriebstemperatur, RoboterData.Status, RoboterData.Heater, RoboterData.Cooler  FROM (SELECT planeten.PID, planeten.Name, planeten.Breite, planeten.Hoehe, koordinaten.KID, koordinaten.X, koordinaten.Y, messdaten.MID, boeden.Typ, messdaten.Temperatur "
-        + "FROM planeten "
-        + "LEFT OUTER JOIN messdaten ON planeten.PID = messdaten.PID "
-        + "LEFT OUTER JOIN koordinaten ON messdaten.KID = koordinaten.KID "
-        + "LEFT OUTER JOIN boeden On boeden.BID = messdaten.BID) AS PlanetMessdaten "
-        + "LEFT OUTER JOIN (SELECT roboter.RID, roboter.PID, roboter.KID, koordinaten.X, koordinaten.Y, richtungen.Bezeichnung, roboter.Name, roboter.Energie, roboter.Betriebstemperatur, stati.Status, roboter.Heater, roboter.Cooler "
-        + "FROM roboter "
-        + "LEFT OUTER JOIN koordinaten ON roboter.KID = koordinaten.KID "
-        + "lEFT OUTER JOIN richtungen ON roboter.RTID = richtungen.RTID "
-        + "LEfT OUTER JOIN stati ON roboter.SID = stati.SID) AS RoboterData ON PlanetMessdaten.PID = RoboterData.PID) AS PlanetMessdataRobots "
-        + "LEFT OUTER JOIN koordinaten ON koordinaten.KID = PlanetMessdataRobots.MessdatenKID OR koordinaten.KID = PlanetMessdataRobots.RoboterKID "
-        + "WHERE PID = :pid "
-        + "ORDER BY PID, KID;";
+//    String sql ="SELECT PID, PlanetName, Breite, Hoehe, KID, X, Y, MID, Typ, Temperatur, RID, Bezeichnung AS Richtung, RoboterName, Energie, Betriebstemperatur, Status, Heater, Cooler FROM (SELECT PlanetMessdaten.PID, PlanetMessdaten.KID AS MessdatenKID, PlanetMessdaten.Name AS PlanetName, PlanetMessdaten.Breite, PlanetMessdaten.Hoehe, PlanetMessdaten.MID, PlanetMessdaten.TYP, PlanetMessdaten.TEMPERATUR, RoboterData.RID, RoboterData.KID as RoboterKID, RoboterData.Bezeichnung, RoboterData.Name AS RoboterName, RoboterData.Energie, RoboterData.Betriebstemperatur, RoboterData.Status, RoboterData.Heater, RoboterData.Cooler  FROM (SELECT planeten.PID, planeten.Name, planeten.Breite, planeten.Hoehe, koordinaten.KID, koordinaten.X, koordinaten.Y, messdaten.MID, boeden.Typ, messdaten.Temperatur "
+//        + "FROM planeten "
+//        + "LEFT OUTER JOIN messdaten ON planeten.PID = messdaten.PID "
+//        + "LEFT OUTER JOIN koordinaten ON messdaten.KID = koordinaten.KID "
+//        + "LEFT OUTER JOIN boeden On boeden.BID = messdaten.BID) AS PlanetMessdaten "
+//        + "LEFT OUTER JOIN (SELECT roboter.RID, roboter.PID, roboter.KID, koordinaten.X, koordinaten.Y, richtungen.Bezeichnung, roboter.Name, roboter.Energie, roboter.Betriebstemperatur, stati.Status, roboter.Heater, roboter.Cooler "
+//        + "FROM roboter "
+//        + "LEFT OUTER JOIN koordinaten ON roboter.KID = koordinaten.KID "
+//        + "lEFT OUTER JOIN richtungen ON roboter.RTID = richtungen.RTID "
+//        + "LEfT OUTER JOIN stati ON roboter.SID = stati.SID) AS RoboterData ON PlanetMessdaten.PID = RoboterData.PID AND PlanetMessdaten.KID = RoboterData.KID) AS PlanetMessdataRobots "
+//        + "LEFT OUTER JOIN koordinaten ON koordinaten.KID = PlanetMessdataRobots.MessdatenKID OR koordinaten.KID = PlanetMessdataRobots.RoboterKID "
+//        + "WHERE PID = :pid "
+//        + "ORDER BY PID, KID;";
+    String sql ="SELECT PlanetCoordData.PID, planeten.Name AS PlanetName, Breite, Hoehe, PlanetCoordData.KID, koordinaten.X, koordinaten.Y, PlanetCoordData.MID, PlanetCoordData.Typ, PlanetCoordData.Temperatur,PlanetCoordData.RID, PlanetCoordData.Bezeichnung AS Richtung, PlanetCoordData.Name AS RoboterName, Energie, Betriebstemperatur, Status, Heater, Cooler FROM (SELECT :pid AS PID, Coord.KID, MID, Messdata.Typ, Messdata.Temperatur, RID, Bezeichnung, Name, Energie, Betriebstemperatur, Status, Heater, Cooler "
+        + "FROM (SELECT KID FROM koordinaten WHERE X < (SELECT Breite FROM planeten WHERE PID = :pid) AND Y < (SELECT Hoehe FROM planeten WHERE PID = :pid)) AS Coord "
+        + "LEFT OUTER JOIN ( "
+        + "    SELECT messdaten.MID, messdaten.KID, boeden.Typ, messdaten.Temperatur FROM messdaten INNER JOIN boeden ON messdaten.BID = boeden.BID WHERE KID IN ( "
+        + "        SELECT KID FROM koordinaten WHERE X < (SELECT Breite FROM planeten WHERE PID = :pid) AND Y < (SELECT Hoehe FROM planeten WHERE PID = :pid)) AND PID = :pid) AS Messdata ON Coord.KID = Messdata.KID "
+        + "LEFT OUTER JOIN ( "
+        + "    SELECT roboter.RID, roboter.KID, richtungen.Bezeichnung, roboter.Name, roboter.Energie, roboter.Betriebstemperatur, stati.Status, roboter.Heater, roboter.Cooler FROM roboter INNER JOIN richtungen ON roboter.RTID = richtungen.RTID INNER JOIN stati ON roboter.SID = stati.SID WHERE KID IN ( "
+        + "        SELECT KID FROM koordinaten WHERE X < (SELECT Breite FROM planeten WHERE PID = :pid) AND Y < (SELECT Hoehe FROM planeten WHERE PID = :pid)) AND PID = :pid) AS Robotdata ON Coord.KID = Robotdata.KID "
+        + ") AS PlanetCoordData "
+        + "INNER JOIN koordinaten ON PlanetCoordData.KID = koordinaten.KID "
+        + "INNER JOIN planeten ON PlanetCoordData.PID = planeten.PID;";
     MapSqlParameterSource parameters = new MapSqlParameterSource();
     parameters.addValue("pid", pid);
 

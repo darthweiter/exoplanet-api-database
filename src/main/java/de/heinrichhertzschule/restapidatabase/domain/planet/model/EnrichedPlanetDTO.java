@@ -8,6 +8,8 @@ public record EnrichedPlanetDTO(
     String planetName,
     int width,
     int height,
+
+    Long mid,
     String ground,
     Double Temperature,
     Long rid,

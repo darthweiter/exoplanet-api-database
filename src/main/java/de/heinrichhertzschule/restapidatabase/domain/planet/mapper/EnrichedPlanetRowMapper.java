@@ -56,6 +56,6 @@ public class EnrichedPlanetRowMapper implements RowMapper<EnrichedPlanetDTO> {
       cooler = null;
     }
 
-    return new EnrichedPlanetDTO(pid, kid, x, y, planetName, width, height, ground, temperature, rid, direction, roboterName, energy, robotTemp, status, heater, cooler);
+    return new EnrichedPlanetDTO(pid, kid, x, y, planetName,  width, height, mid, ground, temperature, rid, direction, roboterName, energy, robotTemp, status, heater, cooler);
   }
 }
