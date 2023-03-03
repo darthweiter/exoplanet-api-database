@@ -25,7 +25,7 @@ DELIMITER $$
 --
 DROP PROCEDURE IF EXISTS `exoplanetprojekt`.`calculate_Koordinaten`
 $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `exoplanetprojekt`.`calculate_Koordinaten` (IN `width` INT, IN `height` INT)   BEGIN
+CREATE PROCEDURE `exoplanetprojekt`.`calculate_Koordinaten` (IN `width` INT, IN `height` INT)   BEGIN
 DECLARE xCoord INT;
 DECLARE yCoord INT;
 DECLARE coordId INT;
@@ -63,7 +63,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `exoplanetprojekt`.`check_valid_planet_x_y`
 $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `exoplanetprojekt`.`check_valid_planet_x_y` (IN `pidIN` INT, IN `xIn` INT, IN `yIn` INT)   BEGIN
+CREATE PROCEDURE `exoplanetprojekt`.`check_valid_planet_x_y` (IN `pidIN` INT, IN `xIn` INT, IN `yIn` INT)   BEGIN
 
 DECLARE planetWidth INT;
 DECLARE planetHeight INT;
@@ -85,7 +85,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `exoplanetprojekt`.`insert_or_update_messdaten`
 $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `exoplanetprojekt`.`insert_or_update_messdaten` (IN `pidIN` INT, IN `xIN` INT, IN `yIN` INT, IN `bodenIN` VARCHAR(255), IN `temperature` DOUBLE)  DETERMINISTIC BEGIN
+CREATE PROCEDURE `exoplanetprojekt`.`insert_or_update_messdaten` (IN `pidIN` INT, IN `xIN` INT, IN `yIN` INT, IN `bodenIN` VARCHAR(255), IN `temperature` DOUBLE)  DETERMINISTIC BEGIN
 DECLARE bodenID INT;
 DECLARE messdatenID INT;
 DECLARE koordinatenID INT;
@@ -119,7 +119,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `exoplanetprojekt`.`update_roboter`
 $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `exoplanetprojekt`.`update_roboter` (IN `ridIn` INT, IN `pidIn` INT, IN `xIn` INT, IN `yIn` INT, IN `directionIn` VARCHAR(255), IN `nameIn` VARCHAR(255), IN `energyIn` DOUBLE, IN `temperatureIn` DOUBLE, IN `statusIn` VARCHAR(255), IN `heaterIn` tinyint(1), IN `coolerIn` tinyint(1))   BEGIN
+CREATE PROCEDURE `exoplanetprojekt`.`update_roboter` (IN `ridIn` INT, IN `pidIn` INT, IN `xIn` INT, IN `yIn` INT, IN `directionIn` VARCHAR(255), IN `nameIn` VARCHAR(255), IN `energyIn` DOUBLE, IN `temperatureIn` DOUBLE, IN `statusIn` VARCHAR(255), IN `heaterIn` tinyint(1), IN `coolerIn` tinyint(1))   BEGIN
 DECLARE coordID INT;
 DECLARE directionID INT;
 DECLARE robotID INT;
@@ -165,7 +165,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `exoplanetprojekt`.`update_roboter_crash`
 $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `exoplanetprojekt`.`update_roboter_crash` (IN `pidIn` INT, IN `kidIn` INT)   BEGIN
+CREATE PROCEDURE `exoplanetprojekt`.`update_roboter_crash` (IN `pidIn` INT, IN `kidIn` INT)   BEGIN
 
 DECLARE crashID INT;
 DECLARE roboterCount INT;
@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `exoplanetprojekt`.`stati` (
 
 INSERT IGNORE INTO `exoplanetprojekt`.`stati` (`SID`, `Status`) VALUES
 (1, 'CRASHED'),
-(2, 'WORKING');
+(2, 'WORKING'),
 (3, 'STUCK_IN_MUD');
 
 -- --------------------------------------------------------
