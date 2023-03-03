@@ -40,14 +40,17 @@ public class PlanetRepository {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public void insert(String name, int width, int height) throws InternalErrorException, InsertFailedException {
+  public void insert(PlanetRequestDTO planet) throws InternalErrorException, InsertFailedException {
     String sql = "INSERT INTO planeten (Name, Breite, Hoehe) VALUES (:name, :breite, :hoehe)";
     MapSqlParameterSource parameters = new MapSqlParameterSource();
-    parameters.addValue("name", name);
-    parameters.addValue("breite", width);
-    parameters.addValue("hoehe", height);
+    parameters.addValue("name", planet.name());
+    parameters.addValue("breite", planet.width());
+    parameters.addValue("hoehe", planet.height());
     try {
-      namedParameterJdbcTemplate.update(sql, parameters);
+      int effectedRows = namedParameterJdbcTemplate.update(sql, parameters);
+      if(effectedRows == 0) {
+        throw new InsertFailedException("body" + planet.toString());
+      }
     } catch (DataAccessException exception) {
       logger.error(exception.getMessage());
       throw new InsertFailedException(exception.getMessage());

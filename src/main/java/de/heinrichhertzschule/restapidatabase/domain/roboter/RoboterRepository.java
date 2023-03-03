@@ -2,6 +2,7 @@ package de.heinrichhertzschule.restapidatabase.domain.roboter;
 
 import de.heinrichhertzschule.restapidatabase.domain.roboter.mapper.RoboterRowMapper;
 import de.heinrichhertzschule.restapidatabase.domain.roboter.model.EnrichedRoboterDTO;
+import de.heinrichhertzschule.restapidatabase.domain.roboter.model.RoboterInsertRequestDTO;
 import de.heinrichhertzschule.restapidatabase.domain.roboter.model.RoboterRequestDTO;
 import de.heinrichhertzschule.restapidatabase.error.exceptions.badrequest.InsertFailedException;
 import de.heinrichhertzschule.restapidatabase.error.exceptions.badrequest.UpdateFailedException;
@@ -49,14 +50,18 @@ public class RoboterRepository {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public void insert(long pid, String name)
+  public void insert(RoboterInsertRequestDTO roboter)
       throws InsertFailedException, InternalErrorException {
     String sql = "INSERT INTO roboter (PID, Name) VALUES(:pid, :name)";
     MapSqlParameterSource parameters = new MapSqlParameterSource();
-    parameters.addValue("pid", pid);
-    parameters.addValue("name", name);
+    parameters.addValue("pid", roboter.pid());
+    parameters.addValue("name", roboter.name());
     try {
-      namedParameterJdbcTemplate.update(sql, parameters);
+      int effectedRows = namedParameterJdbcTemplate.update(sql, parameters);
+      if(effectedRows == 0) {
+        logger.warn("No effected Rows - " + roboter);
+        throw new InsertFailedException("body: " + roboter);
+      }
     } catch (DataAccessException e) {
       logger.error(e.getMessage());
       throw new InsertFailedException(e.getMessage());
@@ -79,17 +84,14 @@ public class RoboterRepository {
     parameters.addValue("heater", input.heater());
     parameters.addValue("cooler", input.cooler());
     try {
-      namedParameterJdbcTemplate.update(sql, parameters);
+      int effectedRows = namedParameterJdbcTemplate.update(sql, parameters);
+      if(effectedRows <= 8) {
+        throw new UpdateFailedException("rid: " + id + " body: " + input.toString());
+      }
     } catch (DataAccessException e) {
       logger.error(e.getMessage());
       throw new UpdateFailedException(e.getMessage());
     }
-  }
-
-
-  public boolean delete() {
-    //no implementation
-    return false;
   }
 
   public List<EnrichedRoboterDTO> getAll() {

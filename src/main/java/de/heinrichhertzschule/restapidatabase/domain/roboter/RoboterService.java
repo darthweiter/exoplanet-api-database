@@ -26,8 +26,8 @@ public class RoboterService {
 
   public RoboterResponseDTO insert(RoboterInsertRequestDTO requestDTO)
       throws InternalErrorException, BadRequestException {
-    roboterRepository.insert(requestDTO.pid(), requestDTO.name());
     try {
+      roboterRepository.insert(requestDTO);
       return getByPIDAndName(requestDTO.pid(), requestDTO.name());
     } catch (NotFoundException ex) {
       logger.error("NotFoundException on insert roboter: " + requestDTO.toString());
@@ -42,10 +42,13 @@ public class RoboterService {
 
   public RoboterResponseDTO update(long id, RoboterRequestDTO input)
       throws InternalErrorException, BadRequestException {
-    roboterRepository.update(id, input);
     try {
+      roboterRepository.update(id, input);
       return getById(id);
-    } catch (NotFoundException e) {
+    } catch (BadRequestException e) {
+      throw e;
+    }
+    catch (NotFoundException e) {
       logger.error("NotFoundException after update with id: "+ id + " robot: " + input);
       throw new InternalErrorException();
     }

@@ -1,4 +1,4 @@
-package de.heinrichhertzschule.restapidatabase.domain.roboter;
+package de.heinrichhertzschule.restapidatabase.domain.roboter.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
